@@ -21,7 +21,11 @@ function appendDebt(): Promise<void> {
         for (;;) {
             const input = readlineSync.question("Who are you and what is your debt? ");
 
-            if (input === 'stop') break;
+            if (input === 'stop') {
+                resolve();
+                break;
+            }
+            
             if (!input.includes(' ')) {
                 console.log("Invalid format.");
                 reject();
@@ -36,9 +40,6 @@ function appendDebt(): Promise<void> {
                         if (err) {
                             console.log("Error writing file!");
                             reject(err);
-                        }
-                        else {
-                            resolve();
                         }
                     })
             } else {

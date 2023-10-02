@@ -1,21 +1,20 @@
 import * as readlineSync from 'readline-sync';
-import * as fs from 'fs';
+import * as fs from 'fs/promises';
 
 export const debtsFile: string = 'src/debts.txt';
 
-function readDebt(): Promise<string> {
-    return new Promise((resolve, reject) => {
-        fs.readFile(debtsFile, { encoding: 'utf-8', flag: 'r' }, (err, result) => {
-            if (err) {
-                reject(err);
-            } else {
-                resolve(result);
-            }
-        });
-    });
+async function readDebt() {
+        try {
+            const debtList = await fs.readFile(debtsFile, { encoding: 'utf-8', flag: 'r' });
+            console.log(debtList);
+        }
+        catch (err) {
+            console.log("Error occured: ", err)
+        }
 }
 
-async function appendDebt(): Promise<void> {
+
+async function appendDebt() {
     try {
         for (;;) {
             const input = readlineSync.question("Who are you and what is your debt? ");
@@ -30,10 +29,9 @@ async function appendDebt(): Promise<void> {
             const debt = Number(debtAsString);
 
             if (!isNaN(debt)) {
-                await fs.promises.writeFile(debtsFile, input + '\n', { flag: "a+" });
+                await fs.writeFile(debtsFile, input + '\n', { flag: "a+" });
             } else {
                 console.log("Not a number!");
-                throw new Error("Not a number");
             }
         }
     } catch (error) {
@@ -46,10 +44,9 @@ async function appendDebt(): Promise<void> {
 async function listDebt() {
     try {
         await appendDebt();
-        const result = await readDebt();
-        console.log(result);
+        await readDebt();
     } catch (error) {
-        console.log("An error occurred!", error);
+        console.log("An error occurred: ", error);
     }
 }
 
