@@ -3,18 +3,7 @@ import * as fs from 'fs';
 
 export const debtsFile: string = 'src/debts.txt';
 
-function callAfterWrite(
-  err: NodeJS.ErrnoException | null,
-  result: string
-): void {
-  if (err) {
-    console.log('An error occured during writing', err);
-  } else {
-    console.log(result);
-  }
-}
-
-function appendDebt(callback: (result: string) => void) {
+function appendDebt(callback: () => void) {
   for (;;) {
     const input = readlineSync.question('Who are you and what is your debt? ');
 
@@ -37,11 +26,18 @@ function appendDebt(callback: (result: string) => void) {
       console.log('Not a number!');
     }
   }
-  fs.readFile(debtsFile, { encoding: 'utf-8', flag: 'r' }, callAfterWrite);
+  callback();
 }
 
-function displayDebt(data: string) {
-  console.log(data);
+function displayDebt() {
+  fs.readFile(debtsFile, { encoding: 'utf-8', flag: 'r' }, (err, result) => {
+    if (err) {
+      console.log(err);
+    }
+    else {
+      console.log(result);
+    }
+  });
 }
 
 appendDebt(displayDebt);
